@@ -4,22 +4,44 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import se.indpro.globofly.R
 import kotlinx.android.synthetic.main.activity_welcome.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import se.indpro.globofly.R
+import se.indpro.globofly.services.MessageService
+import se.indpro.globofly.services.ServiceBuilder
 
 class WelcomeActivity : AppCompatActivity() {
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_welcome)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_welcome)
 
-		// To be replaced by retrofit code
-		message.text = "Black Friday! Get 50% cash back on saving your first spot."
-	}
+        // To be replaced by retrofit code
+        val messageService = ServiceBuilder.buildService(MessageService::class.java)
+        val requestCall = messageService.getMessage("http://59782485.ngrok.io/messages")
 
-	fun getStarted(view: View) {
-		val intent = Intent(this, DestinationListActivity::class.java)
-		startActivity(intent)
-		finish()
-	}
+        requestCall.enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val msg = response.body()
+                    msg?.let {
+                        message.text = msg
+                    }
+                }
+            }
+
+        })
+    }
+
+    fun getStarted(view: View) {
+        val intent = Intent(this, DestinationListActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 }

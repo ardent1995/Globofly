@@ -1,6 +1,7 @@
 package se.indpro.globofly.services
 
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -8,7 +9,9 @@ object ServiceBuilder {
 
     private const val URL = "http://3d36199f.ngrok.io/"
 
-    private val okHttp = OkHttpClient.Builder()
+    private val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+
+    private val okHttp = OkHttpClient.Builder().addInterceptor(logger)
 
     private val builder = Retrofit.Builder().baseUrl(URL)
         .addConverterFactory(GsonConverterFactory.create())

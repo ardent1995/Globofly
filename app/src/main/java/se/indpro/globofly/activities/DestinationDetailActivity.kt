@@ -4,57 +4,81 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_destiny_detail.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import se.indpro.globofly.R
 import se.indpro.globofly.helpers.SampleData
 import se.indpro.globofly.models.Destination
-import kotlinx.android.synthetic.main.activity_destiny_detail.*
+import se.indpro.globofly.services.DestinationService
+import se.indpro.globofly.services.ServiceBuilder
 
 
 class DestinationDetailActivity : AppCompatActivity() {
 
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		setContentView(R.layout.activity_destiny_detail)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_destiny_detail)
 
-		setSupportActionBar(detail_toolbar)
-		// Show the Up button in the action bar.
-		supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setSupportActionBar(detail_toolbar)
+        // Show the Up button in the action bar.
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-		val bundle: Bundle? = intent.extras
+        val bundle: Bundle? = intent.extras
 
-		if (bundle?.containsKey(ARG_ITEM_ID)!!) {
+        if (bundle?.containsKey(ARG_ITEM_ID)!!) {
 
-			val id = intent.getIntExtra(ARG_ITEM_ID, 0)
+            val id = intent.getIntExtra(ARG_ITEM_ID, 0)
 
-			loadDetails(id)
+            loadDetails(id)
 
-			initUpdateButton(id)
+            initUpdateButton(id)
 
-			initDeleteButton(id)
-		}
-	}
+            initDeleteButton(id)
+        }
+    }
 
-	private fun loadDetails(id: Int) {
+    private fun loadDetails(id: Int) {
 
-		// To be replaced by retrofit code
-		val destination = SampleData.getDestinationById(id)
+        // To be replaced by retrofit code
+//		val destination = SampleData.getDestinationById(id)
+//
+//
 
-		destination?.let {
-			et_city.setText(destination.city)
-			et_description.setText(destination.description)
-			et_country.setText(destination.country)
+        val destinationService = ServiceBuilder.buildService(DestinationService::class.java)
+        val requestCall = destinationService.getDestination(id)
+        requestCall.enqueue(object : Callback<Destination> {
+            override fun onFailure(call: Call<Destination>, t: Throwable) {
+                Toast.makeText(this@DestinationDetailActivity,"Failed to retrieve details", Toast.LENGTH_LONG).show()
+            }
 
-			collapsing_toolbar.title = destination.city
-		}
-	}
+            override fun onResponse(call: Call<Destination>, response: Response<Destination>) {
+                if (response.isSuccessful) {
+                    val destination = response.body()
+                    destination?.let {
+                        et_city.setText(destination.city)
+                        et_description.setText(destination.description)
+                        et_country.setText(destination.country)
 
-	private fun initUpdateButton(id: Int) {
+                        collapsing_toolbar.title = destination.city
+                    }
+                }else{
+                    Toast.makeText(this@DestinationDetailActivity,"Failed to retrieve details", Toast.LENGTH_LONG).show()
+                }
+            }
 
-		btn_update.setOnClickListener {
+        })
+    }
 
-			val city = et_city.text.toString()
-			val description = et_description.text.toString()
-			val country = et_country.text.toString()
+    private fun initUpdateButton(id: Int) {
+
+        btn_update.setOnClickListener {
+
+            val city = et_city.text.toString()
+            val description = et_description.text.toString()
+            val country = et_country.text.toString()
 
             // To be replaced by retrofit code
             val destination = Destination()
@@ -65,30 +89,30 @@ class DestinationDetailActivity : AppCompatActivity() {
 
             SampleData.updateDestination(destination);
             finish() // Move back to DestinationListActivity
-		}
-	}
+        }
+    }
 
-	private fun initDeleteButton(id: Int) {
+    private fun initDeleteButton(id: Int) {
 
-		btn_delete.setOnClickListener {
+        btn_delete.setOnClickListener {
 
             // To be replaced by retrofit code
             SampleData.deleteDestination(id)
             finish() // Move back to DestinationListActivity
-		}
-	}
+        }
+    }
 
-	override fun onOptionsItemSelected(item: MenuItem): Boolean {
-		val id = item.itemId
-		if (id == android.R.id.home) {
-			navigateUpTo(Intent(this, DestinationListActivity::class.java))
-			return true
-		}
-		return super.onOptionsItemSelected(item)
-	}
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == android.R.id.home) {
+            navigateUpTo(Intent(this, DestinationListActivity::class.java))
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
-	companion object {
+    companion object {
 
-		const val ARG_ITEM_ID = "item_id"
-	}
+        const val ARG_ITEM_ID = "item_id"
+    }
 }

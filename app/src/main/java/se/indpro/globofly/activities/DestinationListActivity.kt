@@ -38,7 +38,10 @@ class DestinationListActivity : AppCompatActivity() {
 
         // To be replaced by retrofit code
         val destinationService = ServiceBuilder.buildService(DestinationService::class.java)
-        val requestCall = destinationService.getDestinationList()
+        val filter = HashMap<String,String>()
+        filter["country"] = "India"
+        filter["count"] = "1"
+        val requestCall = destinationService.getDestinationList(filter)
 
         requestCall.enqueue(object : Callback<List<Destination>> {
             override fun onFailure(call: Call<List<Destination>>, t: Throwable) {
