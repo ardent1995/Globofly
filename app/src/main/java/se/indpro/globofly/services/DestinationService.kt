@@ -1,9 +1,7 @@
 package se.indpro.globofly.services
 
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.QueryMap
+import retrofit2.http.*
 import se.indpro.globofly.models.Destination
 
 interface DestinationService {
@@ -13,4 +11,7 @@ interface DestinationService {
 
     @GET("destination/{id}")
     fun getDestination(@Path("id") id: Int): Call<Destination>
+
+    @POST("destination")
+    fun addDestination(@Body destination: Destination) : Call<Destination>
 }

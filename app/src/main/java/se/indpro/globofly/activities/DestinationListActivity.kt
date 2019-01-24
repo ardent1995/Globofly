@@ -39,8 +39,8 @@ class DestinationListActivity : AppCompatActivity() {
         // To be replaced by retrofit code
         val destinationService = ServiceBuilder.buildService(DestinationService::class.java)
         val filter = HashMap<String,String>()
-        filter["country"] = "India"
-        filter["count"] = "1"
+//        filter["country"] = "India"
+//        filter["count"] = "1"
         val requestCall = destinationService.getDestinationList(filter)
 
         requestCall.enqueue(object : Callback<List<Destination>> {

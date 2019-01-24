@@ -20,7 +20,7 @@ class WelcomeActivity : AppCompatActivity() {
 
         // To be replaced by retrofit code
         val messageService = ServiceBuilder.buildService(MessageService::class.java)
-        val requestCall = messageService.getMessage("http://59782485.ngrok.io/messages")
+        val requestCall = messageService.getMessage("http://620e1246.ngrok.io/messages")
 
         requestCall.enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
