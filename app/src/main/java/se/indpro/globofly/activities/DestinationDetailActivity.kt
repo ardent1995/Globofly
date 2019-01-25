@@ -80,7 +80,7 @@ class DestinationDetailActivity : AppCompatActivity() {
             val description = et_description.text.toString()
             val country = et_country.text.toString()
 
-            // To be replaced by retrofit code
+            /*// To be replaced by retrofit code
             val destination = Destination()
             destination.id = id
             destination.city = city
@@ -88,7 +88,26 @@ class DestinationDetailActivity : AppCompatActivity() {
             destination.country = country
 
             SampleData.updateDestination(destination);
-            finish() // Move back to DestinationListActivity
+            finish() // Move back to DestinationListActivity*/
+
+            val destinationService = ServiceBuilder.buildService(DestinationService::class.java)
+            val requestCall = destinationService.updateDestination(id,city,description,country)
+
+            requestCall.enqueue(object : Callback<Destination> {
+                override fun onFailure(call: Call<Destination>, t: Throwable) {
+                    Toast.makeText(this@DestinationDetailActivity,"Failed to update",Toast.LENGTH_LONG).show()
+                }
+
+                override fun onResponse(call: Call<Destination>, response: Response<Destination>) {
+                    if(response.isSuccessful){
+                        Toast.makeText(this@DestinationDetailActivity,"Updated Successfully",Toast.LENGTH_LONG).show()
+                        finish()
+                        val destination = response.body()
+                    }else{
+                        Toast.makeText(this@DestinationDetailActivity,"Failed to update",Toast.LENGTH_LONG).show()
+                    }
+                }
+            })
         }
     }
 
@@ -96,9 +115,24 @@ class DestinationDetailActivity : AppCompatActivity() {
 
         btn_delete.setOnClickListener {
 
-            // To be replaced by retrofit code
-            SampleData.deleteDestination(id)
-            finish() // Move back to DestinationListActivity
+            val destinationService =ServiceBuilder.buildService(DestinationService::class.java)
+            val requestCall = destinationService.deleteDestination(id)
+
+            requestCall.enqueue(object : Callback<Unit> {
+                override fun onFailure(call: Call<Unit>, t: Throwable) {
+                    Toast.makeText(this@DestinationDetailActivity,"Unable to delete",Toast.LENGTH_LONG).show()
+                }
+
+                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                    if(response.isSuccessful){
+                        finish()
+                        Toast.makeText(this@DestinationDetailActivity,"Deleted Successfully",Toast.LENGTH_LONG).show()
+                    }else{
+                        Toast.makeText(this@DestinationDetailActivity,"Unable to delete",Toast.LENGTH_LONG).show()
+                    }
+                }
+
+            })
         }
     }
 

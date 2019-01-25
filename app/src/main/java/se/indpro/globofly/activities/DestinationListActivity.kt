@@ -43,6 +43,11 @@ class DestinationListActivity : AppCompatActivity() {
 //        filter["count"] = "1"
         val requestCall = destinationService.getDestinationList(filter)
 
+        //to cancel a retrofit call
+//        requestCall.cancel()
+        //to check a retrofit call is canceled or not
+//        requestCall.isCanceled
+
         requestCall.enqueue(object : Callback<List<Destination>> {
             override fun onFailure(call: Call<List<Destination>>, t: Throwable) {
 
